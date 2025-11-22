@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Platzverteilung Tag 1 / Tag 2</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root {
+      --bg: #101010;
+      --bg-card: #1b1b1b;
+      --bg-card-soft: #181818;
+      --border-soft: #2a2a2a;
+      --text: #f5f5f5;
+      --text-muted: #aaaaaa;
+      --accent: #ff9800;
+      --accent-soft: rgba(255, 152, 0, 0.2);
+      --danger: #ff5252;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #202020 0, #050505 60%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 64px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h1 span.logo-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+    }
+
+    .step-indicator {
+      display: flex;
+      gap: 10px;
+      margin: 16px 0 8px;
+      flex-wrap: wrap;
+    }
+
+    .step-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--bg-card-soft);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      border: 1px solid transparent;
+    }
+
+    .step-pill.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .step-pill-number {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 1px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border-radius: 14px;
+      padding: 16px 18px 18px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 18px 35px rgba(0,0,0,0.55);
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: #111;
+      color: var(--text);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft);
+      background: #141414;
+    }
+
+    textarea {
+      min-height: 160px;
+      resize: vertical;
+      font-family: monospace;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .col-3 {
+      flex: 1 1 160px;
+    }
+
+    .col-4 {
+      flex: 1 1 220px;
+    }
+
+    .col-6 {
+      flex: 1 1 320px;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.05s, box-shadow 0.15s, border-color 0.15s;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #050505;
+      box-shadow: 0 8px 18px rgba(255,152,0,0.35);
+      font-weight: 600;
+    }
+
+    .btn-primary:hover {
+      background: #ffb74d;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+
+    .btn-secondary:hover {
+      background: var(--accent-soft);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--border-soft);
+      color: var(--text-muted);
+    }
+
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--bg-card-soft);
+      color: var(--text-muted);
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border-soft);
+      text-align: left;
+    }
+
+    th {
+      font-size: 0.8rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      background: #151515;
+    }
+
+    tr:nth-child(even) td {
+      background: #141414;
+    }
+
+    .tag-header {
+      font-size: 0.9rem;
+      margin: 4px 0 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tag-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    .tag-chip span.dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .warning {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,82,82,0.6);
+      background: rgba(255,82,82,0.08);
+      color: #ffb3b3;
+      font-size: 0.8rem;
+    }
+
+    .subtle {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .pill strong {
+      color: var(--accent);
+    }
+
+    .unassigned {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .unassigned ul {
+      margin: 4px 0 0 18px;
+      padding: 0;
+    }
+
+    .unassigned li {
+      margin: 1px 0;
+    }
+
+    .table-wrapper {
+      max-height: 340px;
+      overflow: auto;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+    }
+
+    .muted-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .sticky-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+    }
+
+    .sticky-footer > div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .final-note {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    @media (max-width: 720px) {
+      .card {
+        padding: 14px 12px 16px;
+      }
+      th, td {
+        padding: 5px 6px;
+      }
+    }
+
+    /* Print: nur finale Liste anzeigen */
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+
+      .section {
+        display: none !important;
+      }
+
+      #step4 {
+        display: block !important;
+        box-shadow: none;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .container {
+        max-width: 100%;
+        padding: 0;
+      }
+
+      h1 {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1><span class="logo-dot"></span> Random-Platzverteilung Tag&nbsp;1 / Tag&nbsp;2</h1>
+  <div class="step-indicator">
+    <div class="step-pill" id="step-pill-1">
+      <span class="step-pill-number">1</span>
+      <span>Einstellungen & Studierende</span>
+    </div>
+    <div class="step-pill" id="step-pill-2">
+      <span class="step-pill-number">2</span>
+      <span>Zufällige Verteilung</span>
+    </div>
+    <div class="step-pill" id="step-pill-3">
+      <span class="step-pill-number">3</span>
+      <span>Feinbearbeitung</span>
+    </div>
+    <div class="step-pill" id="step-pill-4">
+      <span class="step-pill-number">4</span>
+      <span>Finale Liste & Export</span>
+    </div>
+  </div>
+
+  <!-- STEP 1: Setup -->
+  <section class="section active" id="step1">
+    <div class="card">
+      <h2>1. Einstellungen & Studierendenliste</h2>
+      <div class="row">
+        <div class="col-4">
+          <label for="date1">Datum Tag&nbsp;1</label>
+          <input type="date" id="date1">
+        </div>
+        <div class="col-4">
+          <label for="date2">Datum Tag&nbsp;2</label>
+          <input type="date" id="date2">
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div class="col-3">
+          <label for="cap1">Plätze Tag&nbsp;1</label>
+          <input type="number" min="0" id="cap1" value="12">
+        </div>
+        <div class="col-3">
+          <label for="cap2">Plätze Tag&nbsp;2</label>
+          <input type="number" min="0" id="cap2" value="12">
+        </div>
+      </div>
+
+      <div style="margin-top:14px;">
+        <label for="studentsInput">Studierendenliste (eine Zeile pro Person)</label>
+        <textarea id="studentsInput" placeholder="Beispiele:
+Max Mustermann;Tag 1
+Anna Müller;Tag 2
+Ali Example;1
+Sara Beispiel;2"></textarea>
+        <div class="hint">
+          Format: <strong>Name ; Präferenz</strong> &mdash; Präferenz kann z.B. <code>Tag 1</code>, <code>Tag 2</code>, <code>1</code> oder <code>2</code> sein.
+          Wenn nichts angegeben ist, wird standardmäßig Tag&nbsp;1 angenommen.
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-primary" id="btnRandomize">
+          &#9889; Zufällig verteilen
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: Random assignment -->
+  <section class="section" id="step2">
+    <div class="card">
+      <h2>2. Zufällige Verteilung nach Präferenz & Kapazität</h2>
+      <div class="row">
+        <div class="col-6">
+          <div class="muted-label">Tag&nbsp;1</div>
+          <div class="pill">
+            <strong id="infoTag1Date">–</strong>&nbsp;&middot;&nbsp;
+            Plätze: <span id="infoTag1Cap">0</span>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="muted-label">Tag&nbsp;2</div>
+          <div class="pill">
+            <strong id="infoTag2Date">–</strong>&nbsp;&middot;&nbsp;
+            Plätze: <span id="infoTag2Cap">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top:12px;">
+        <div class="col-6">
+          <div class="tag-header">
+            <div class="tag-chip"><span class="dot"></span> Tag&nbsp;1 – zugewiesene Studierende</div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>Platz</th>
+                <th>Name</th>
+                <th>Präferenz</th>
+              </tr>
+              </thead>
+              <tbody id="tag1TableBody"></tbody>
+            </table>
+          </div>
+          <div class="hint" id="tag1FreeInfo"></div>
+        </div>
+
+        <div class="col-6">
+          <div class="tag-header">
+            <div class="tag-chip"><span class="dot"></span> Tag&nbsp;2 – zugewiesene Studierende</div>
+          </div>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+              <tr>
+                <th>Platz</th>
+                <th>Name</th>
+                <th>Präferenz</th>
+              </tr>
+              </thead>
+              <tbody id="tag2TableBody"></tbody>
+            </table>
+          </div>
+          <div class="hint" id="tag2FreeInfo"></div>
+        </div>
+      </div>
+
+      <div class="unassigned" id="unassignedBox" style="display:none;margin-top:10px;">
+        <span class="badge"><span class="badge-dot"></span> Nicht zugeordnet (keine freien Plätze)</span>
+        <ul id="unassignedList"></ul>
+      </div>
+
+      <div class="sticky-footer">
+        <div>
+          <button class="btn-secondary" id="btnRemix">&#8635; Neu mischen</button>
+          <button class="btn-ghost" id="btnBackToSetup">&larr; Zurück zu Eingaben</button>
+        </div>
+        <div>
+          <button class="btn-primary" id="btnToEdit">Weiter zur Bearbeitung &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 3: Edit -->
+  <section class="section" id="step3">
+    <div class="card">
+      <h2>3. Feinbearbeitung (Tag, Position, Name editierbar)</h2>
+      <p class="subtle">
+        Du kannst Tag (1/2), gewünschte Position (Platz) und den Namen anpassen. Beim Kompilieren werden die Plätze pro Tag
+        automatisch <strong>lückenlos von 1 aufwärts</strong> vergeben (Sortierung nach Position).
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Position (Wunsch)</th>
+            <th>Name</th>
+          </tr>
+          </thead>
+          <tbody id="editTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="sticky-footer">
+        <div>
+          <button class="btn-ghost" id="btnBackToRandom">&larr; Zurück zur Verteilung</button>
+        </div>
+        <div>
+          <button class="btn-primary" id="btnCompile">&#10003; Liste kompilieren</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: Final + export -->
+  <section class="section" id="step4">
+    <div class="card">
+      <h2>4. Finale Liste & Export</h2>
+      <div id="finalWarnings"></div>
+
+      <div class="table-wrapper" style="margin-top:8px;">
+        <table id="finalTable">
+          <thead>
+          <tr>
+            <th>Tag</th>
+            <th>Datum</th>
+            <th>Platz</th>
+            <th>Name</th>
+          </tr>
+          </thead>
+          <tbody id="finalTableBody"></tbody>
+        </table>
+      </div>
+
+      <p class="final-note">
+        Hinweis: Beim Export als PDF öffnet sich der Druckdialog deines Browsers. Dort kannst du
+        &bdquo;Als PDF speichern&ldquo; wählen.
+      </p>
+
+      <div class="sticky-footer no-print">
+        <div>
+          <button class="btn-ghost" id="btnBackToEdit">&larr; Zurück zur Bearbeitung</button>
+        </div>
+        <div>
+          <button class="btn-secondary" id="btnExportCsv">&#128190; Als Tabelle (CSV) exportieren</button>
+          <button class="btn-primary" id="btnExportPdf">&#128424; Drucken / PDF</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  // --- State ---
+  const appState = {
+    originalStudents: [],  // { id, name, preference: 1|2 }
+    assignments: null,     // { tag1:[], tag2:[], unassigned:[] }
+    date1: "",
+    date2: "",
+    cap1: 0,
+    cap2: 0,
+    finalList: []          // { day, date, seat, name }
+  };
+
+  function showStep(step) {
+    for (let i = 1; i <= 4; i++) {
+      const section = document.getElementById("step" + i);
+      const pill = document.getElementById("step-pill-" + i);
+      if (section) section.classList.toggle("active", i === step);
+      if (pill) pill.classList.toggle("active", i === step);
+    }
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function parseStudentsInput() {
+    const text = document.getElementById("studentsInput").value || "";
+    const lines = text.split(/\r?\n/);
+    const students = [];
+    let idCounter = 1;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+
+      const parts = trimmed.split(/[;,]+/);
+      const name = (parts[0] || "").trim();
+      if (!name) continue;
+
+      let prefRaw = (parts[1] || "").toLowerCase().trim();
+      let preference = 1; // default
+
+      if (prefRaw.includes("2")) {
+        preference = 2;
+      } else if (prefRaw.includes("1")) {
+        preference = 1;
+      }
+
+      students.push({
+        id: idCounter++,
+        name,
+        preference
+      });
+    }
+
+    return students;
+  }
+
+  function handleRandomizeFromStep1() {
+    const date1 = document.getElementById("date1").value || "";
+    const date2 = document.getElementById("date2").value || "";
+    const cap1 = parseInt(document.getElementById("cap1").value, 10) || 0;
+    const cap2 = parseInt(document.getElementById("cap2").value, 10) || 0;
+
+    const students = parseStudentsInput();
+    if (!students.length) {
+      alert("Bitte mindestens einen Studierenden eintragen.");
+      return;
+    }
+
+    appState.date1 = date1;
+    appState.date2 = date2;
+    appState.cap1 = cap1;
+    appState.cap2 = cap2;
+    appState.originalStudents = students;
+
+    performRandomAssignment();
+    showStep(2);
+  }
+
+  function performRandomAssignment() {
+    const students = appState.originalStudents.slice();
+    shuffle(students);
+
+    const cap1 = appState.cap1;
+    const cap2 = appState.cap2;
+    let rem1 = cap1;
+    let rem2 = cap2;
+
+    const tag1 = [];
+    const tag2 = [];
+    const unassigned = [];
+
+    for (const s of students) {
+      let assigned = false;
+
+      if (s.preference === 1 && rem1 > 0) {
+        tag1.push({ ...s });
+        rem1--;
+        assigned = true;
+      } else if (s.preference === 2 && rem2 > 0) {
+        tag2.push({ ...s });
+        rem2--;
+        assigned = true;
+      }
+
+      if (!assigned) {
+        // versuche alternativen Tag
+        if (s.preference === 1 && rem2 > 0) {
+          tag2.push({ ...s });
+          rem2--;
+          assigned = true;
+        } else if (s.preference === 2 && rem1 > 0) {
+          tag1.push({ ...s });
+          rem1--;
+          assigned = true;
+        }
+      }
+
+      if (!assigned) {
+        unassigned.push({ ...s });
+      }
+    }
+
+    shuffle(tag1);
+    shuffle(tag2);
+
+    tag1.forEach((s, idx) => s.seat = idx + 1);
+    tag2.forEach((s, idx) => s.seat = idx + 1);
+
+    appState.assignments = { tag1, tag2, unassigned };
+    renderAssignmentView();
+  }
+
+  function renderAssignmentView() {
+    const { tag1, tag2, unassigned } = appState.assignments || { tag1: [], tag2: [], unassigned: [] };
+
+    document.getElementById("infoTag1Date").textContent = appState.date1 || "kein Datum";
+    document.getElementById("infoTag2Date").textContent = appState.date2 || "kein Datum";
+    document.getElementById("infoTag1Cap").textContent = appState.cap1;
+    document.getElementById("infoTag2Cap").textContent = appState.cap2;
+
+    const t1Body = document.getElementById("tag1TableBody");
+    const t2Body = document.getElementById("tag2TableBody");
+    t1Body.innerHTML = "";
+    t2Body.innerHTML = "";
+
+    for (const s of tag1) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${s.seat}</td><td>${s.name}</td><td>Tag ${s.preference}</td>`;
+      t1Body.appendChild(tr);
+    }
+
+    for (const s of tag2) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${s.seat}</td><td>${s.name}</td><td>Tag ${s.preference}</td>`;
+      t2Body.appendChild(tr);
+    }
+
+    const free1 = Math.max(appState.cap1 - tag1.length, 0);
+    const free2 = Math.max(appState.cap2 - tag2.length, 0);
+
+    const t1Info = document.getElementById("tag1FreeInfo");
+    const t2Info = document.getElementById("tag2FreeInfo");
+
+    t1Info.textContent = `Belegte Plätze: ${tag1.length} / ${appState.cap1} (freie Plätze: ${free1})`;
+    t2Info.textContent = `Belegte Plätze: ${tag2.length} / ${appState.cap2} (freie Plätze: ${free2})`;
+
+    const unBox = document.getElementById("unassignedBox");
+    const ul = document.getElementById("unassignedList");
+    ul.innerHTML = "";
+
+    if (unassigned.length) {
+      unBox.style.display = "block";
+      for (const s of unassigned) {
+        const li = document.createElement("li");
+        li.textContent = `${s.name} (Präferenz Tag ${s.preference})`;
+        ul.appendChild(li);
+      }
+    } else {
+      unBox.style.display = "none";
+    }
+  }
+
+  function handleRemix() {
+    if (!appState.originalStudents.length) {
+      alert("Keine Daten zum Neu-Mischen. Bitte zuerst Studierende eingeben.");
+      return;
+    }
+    performRandomAssignment();
+  }
+
+  function populateEditTable() {
+    const tbody = document.getElementById("editTableBody");
+    tbody.innerHTML = "";
+
+    if (!appState.assignments) {
+      return;
+    }
+
+    const { tag1, tag2, unassigned } = appState.assignments;
+
+    const rows = [];
+
+    tag1.forEach(s => rows.push({ day: 1, pos: s.seat, name: s.name }));
+    tag2.forEach(s => rows.push({ day: 2, pos: s.seat, name: s.name }));
+    unassigned.forEach(s => rows.push({ day: 0, pos: "", name: s.name }));
+
+    for (const r of rows) {
+      const tr = document.createElement("tr");
+      const selectHTML = `
+        <select class="edit-day">
+          <option value="1"${r.day === 1 ? " selected" : ""}>Tag 1</option>
+          <option value="2"${r.day === 2 ? " selected" : ""}>Tag 2</option>
+          <option value="0"${r.day === 0 ? " selected" : ""}>Kein Tag</option>
+        </select>
+      `;
+      const posVal = r.pos !== "" ? ` value="${r.pos}"` : "";
+      tr.innerHTML = `
+        <td>${selectHTML}</td>
+        <td><input type="number" min="1" class="edit-pos"${posVal} placeholder="-"></td>
+        <td><input type="text" class="edit-name" value="${r.name.replace(/"/g, "&quot;")}"></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  function compileFinalList() {
+    const rows = document.querySelectorAll("#editTableBody tr");
+    const day1Items = [];
+    const day2Items = [];
+    const unassigned = [];
+
+    rows.forEach(row => {
+      const day = parseInt(row.querySelector(".edit-day").value, 10);
+      const name = row.querySelector(".edit-name").value.trim();
+      let pos = parseInt(row.querySelector(".edit-pos").value, 10);
+
+      if (!name) return;
+      if (isNaN(pos) || pos < 1) pos = 9999;
+
+      const item = { day, desiredPos: pos, name };
+      if (day === 1) day1Items.push(item);
+      else if (day === 2) day2Items.push(item);
+      else unassigned.push(item);
+    });
+
+    day1Items.sort((a, b) => a.desiredPos - b.desiredPos || a.name.localeCompare(b.name));
+    day2Items.sort((a, b) => a.desiredPos - b.desiredPos || a.name.localeCompare(b.name));
+
+    let seat = 1;
+    day1Items.forEach(it => it.seat = seat++);
+    seat = 1;
+    day2Items.forEach(it => it.seat = seat++);
+
+    const finalList = [];
+    const date1 = appState.date1 || "";
+    const date2 = appState.date2 || "";
+
+    day1Items.forEach(it => finalList.push({ day: 1, date: date1, seat: it.seat, name: it.name }));
+    day2Items.forEach(it => finalList.push({ day: 2, date: date2, seat: it.seat, name: it.name }));
+    unassigned.forEach(it => finalList.push({ day: 0, date: "", seat: "", name: it.name }));
+
+    appState.finalList = finalList;
+
+    renderFinalList();
+    showStep(4);
+  }
+
+  function renderFinalList() {
+    const tbody = document.getElementById("finalTableBody");
+    tbody.innerHTML = "";
+
+    const warnings = [];
+    const countDay1 = appState.finalList.filter(x => x.day === 1).length;
+    const countDay2 = appState.finalList.filter(x => x.day === 2).length;
+
+    if (countDay1 > appState.cap1) {
+      warnings.push(`Achtung: Tag 1 hat ${countDay1} Studierende, aber nur ${appState.cap1} Plätze.`);
+    }
+    if (countDay2 > appState.cap2) {
+      warnings.push(`Achtung: Tag 2 hat ${countDay2} Studierende, aber nur ${appState.cap2} Plätze.`);
+    }
+    const unassigned = appState.finalList.filter(x => x.day === 0);
+    if (unassigned.length) {
+      warnings.push(`Hinweis: ${unassigned.length} Studierende sind keinem Tag zugeordnet.`);
+    }
+
+    const warnBox = document.getElementById("finalWarnings");
+    warnBox.innerHTML = "";
+    if (warnings.length) {
+      const div = document.createElement("div");
+      div.className = "warning";
+      div.innerHTML = warnings.map(w => `<div>${w}</div>`).join("");
+      warnBox.appendChild(div);
+    }
+
+    const ordered = [
+      ...appState.finalList.filter(x => x.day === 1),
+      ...appState.finalList.filter(x => x.day === 2),
+      ...unassigned
+    ];
+
+    ordered.forEach(item => {
+      const tr = document.createElement("tr");
+      const dayLabel = item.day === 1 ? "Tag 1" : (item.day === 2 ? "Tag 2" : "–");
+      const date = item.date || "";
+      const seat = item.seat || "";
+      tr.innerHTML = `
+        <td>${dayLabel}</td>
+        <td>${date}</td>
+        <td>${seat}</td>
+        <td>${item.name}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  function exportCsv() {
+    if (!appState.finalList.length) {
+      alert("Keine finale Liste zum Export vorhanden.");
+      return;
+    }
+
+    const header = ["Tag", "Datum", "Platz", "Name"];
+    const rows = [header];
+
+    appState.finalList.forEach(item => {
+      const dayLabel = item.day === 1 ? "Tag 1" : (item.day === 2 ? "Tag 2" : "");
+      rows.push([
+        dayLabel,
+        item.date || "",
+        item.seat || "",
+        item.name || ""
+      ]);
+    });
+
+    const csv = rows.map(r =>
+      r.map(field => `"${String(field).replace(/"/g, '""')}"`).join(";")
+    ).join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "platzverteilung_tag1_tag2.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("btnRandomize").addEventListener("click", handleRandomizeFromStep1);
+    document.getElementById("btnRemix").addEventListener("click", handleRemix);
+    document.getElementById("btnBackToSetup").addEventListener("click", () => showStep(1));
+    document.getElementById("btnToEdit").addEventListener("click", () => {
+      populateEditTable();
+      showStep(3);
+    });
+    document.getElementById("btnBackToRandom").addEventListener("click", () => showStep(2));
+    document.getElementById("btnCompile").addEventListener("click", compileFinalList);
+    document.getElementById("btnBackToEdit").addEventListener("click", () => showStep(3));
+    document.getElementById("btnExportCsv").addEventListener("click", exportCsv);
+    document.getElementById("btnExportPdf").addEventListener("click", () => window.print());
+  });
+</script>
+</body>
+</html>
